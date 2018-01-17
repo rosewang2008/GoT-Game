@@ -1,39 +1,28 @@
 package com.rewang.game;
-
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import java.util.Arrays;
+
 // first class that will be run!
-public class GoT extends Game {
-	// batch: used to draw things on the screen
-	// one spritebatch only!
+public class GoT extends ApplicationAdapter {
 	private SpriteBatch batch;
-	private Pixmap pixmap;
-	private Sprite sprite;
-	private Texture texture;
-//	private Texture img;
+	Animation<TextureRegion> walking;
+	Texture walkSheet;
+	float stateTime;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-
-		// Pixmap: raw image in memry
-		pixmap = new Pixmap(256, 128, Pixmap.Format.RGBA8888);
-
-		// Red fill in
-		pixmap.setColor(Color.RED);
-		pixmap.fill();
-
-
-		texture = new Texture(Gdx.files.internal("plane.png"));
-		sprite = new Sprite(texture);
-//		img = new Texture("plane.jpg");
+		walkSheet = new Texture("sprites/girl_sprite.png");
+		TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/13, walkSheet.getHeight()/21);
+		TextureRegion[] walkFrames = Arrays.copyOfRange(tmp[11], 0, 9);
+		walking = new Animation<TextureRegion>(0.1f, walkFrames);
+		stateTime = 0f;
 	}
 
 	@Override
@@ -50,19 +39,20 @@ public class GoT extends Game {
 
 	}
 
-
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stateTime += Gdx.graphics.getDeltaTime();
+		TextureRegion frame = walking.getKeyFrame(stateTime, true);
 		batch.begin();
-		sprite.draw(batch);
+		batch.draw(frame, 50, 50);
 		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		texture.dispose();
+		walkSheet.dispose();
 	}
 }
