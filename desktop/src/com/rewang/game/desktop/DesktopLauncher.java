@@ -1,12 +1,13 @@
-package com.queens.game.desktop;
+package com.rewang.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.queens.game.QueensGame;
+import com.rewang.game.GoT;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new QueensGame(), config);
+
+		new LwjglApplication(new GoT(), config);
 	}
 }
