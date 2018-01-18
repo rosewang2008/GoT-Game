@@ -1,8 +1,6 @@
 package com.rewang.game;
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.Gdx;
 
 import java.util.Arrays;
 
@@ -21,8 +18,8 @@ public class GoT implements ApplicationListener {
 	private Texture spriteTexture;
 	private Sprite spriteCharacter;
 
-	private int spriteX;
-	private int spriteY;
+	private int spriteX = 0;
+	private int spriteY = 0 ;
 	float spriteSpeed = 10.0f;
 
 	Animation<TextureRegion> walking;
@@ -35,8 +32,6 @@ public class GoT implements ApplicationListener {
 		FileHandle spriteFileHandle = Gdx.files.internal("sprites/idle_girl.png");
 		spriteTexture = new Texture(spriteFileHandle);
 		spriteCharacter = new Sprite(spriteTexture);
-		spriteX = 0;
-		spriteY = 0;
 //		walkSheet = new Texture("sprites/girl_sprite.png");
 //		TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/13, walkSheet.getHeight()/21);
 //		TextureRegion[] walkFrames = Arrays.copyOfRange(tmp[11], 0, 9);
@@ -49,27 +44,31 @@ public class GoT implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if (Gdx.input.isKeyPressed(Keys.LEFT))
-			spriteX -= Gdx.graphics.getDeltaTime() * spriteSpeed;
-		if(Gdx.input.isKeyPressed(Keys.RIGHT))
-			spriteX += Gdx.graphics.getDeltaTime() * spriteSpeed;
-		if(Gdx.input.isKeyPressed(Keys.UP))
-			spriteY += Gdx.graphics.getDeltaTime() * spriteSpeed;
-		if(Gdx.input.isKeyPressed(Keys.DOWN))
-			spriteY -= Gdx.graphics.getDeltaTime() * spriteSpeed;
+		// drawing
 		batch.begin();
-//		spriteCharacter.draw(batch);
-		batch.draw(spriteCharacter, 0 ,0, 30, 30);
+		spriteCharacter.setPosition(spriteX, spriteY);
+		spriteCharacter.draw(batch);
 		batch.end();
-//		Gdx.gl.glClearColor(ddd1, 0, 0, 1);
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		stateTime += Gdx.graphics.getDeltaTime();
-//		TextureRegion frame = walking.getKeyFrame(stateTime, true);
-//		batch.begin();
-//		batch.draw(frame, 50, 50);
-//		batch.end();
+		spriteMove();
 	}
 
+	public void spriteMove() {
+		System.out.println(Gdx.input.isKeyPressed(Keys.LEFT));
+		System.out.println(Gdx.input.isKeyPressed(Keys.RIGHT));
+		System.out.println(Gdx.input.isKeyPressed(Keys.UP));
+		System.out.println(Gdx.input.isKeyPressed(Keys.DOWN));
+		System.out.println();
+		if (Gdx.input.isKeyPressed(Keys.LEFT))
+			spriteX--;
+		if(Gdx.input.isKeyPressed(Keys.RIGHT))
+			spriteX++;
+			System.out.println(spriteX);
+		if(Gdx.input.isKeyPressed(Keys.UP))
+			spriteY++;
+		if(Gdx.input.isKeyPressed(Keys.DOWN))
+			spriteY--;
+//			spriteY -= Gdx.graphics.getDeltaTime() * spriteSpeed;
+	}
 	@Override
 	public void resize(int width, int height) {
 	}
