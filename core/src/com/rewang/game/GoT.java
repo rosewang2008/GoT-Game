@@ -18,21 +18,23 @@ import java.util.Arrays;
 // first class that will be run!
 public class GoT implements ApplicationListener {
 	private SpriteBatch batch;
+	private Texture spriteTexture;
+	private Sprite spriteCharacter;
+
 	private int spriteX;
 	private int spriteY;
-	private Sprite spriteCharacter;
-	private Texture spriteTexture;
-	Animation<TextureRegion> walking;
-	Texture walkSheet;
-	float stateTime;
 	float spriteSpeed = 10.0f;
+
+	Animation<TextureRegion> walking;
+//	Texture walkSheet;
+//	float stateTime;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		FileHandle spriteFileHandle = Gdx.files.internal("sprites/idle_girl.png");
 		spriteTexture = new Texture(spriteFileHandle);
-		spriteCharacter = new Sprite(spriteTexture, 0, 158, 32, 64);
+		spriteCharacter = new Sprite(spriteTexture);
 		spriteX = 0;
 		spriteY = 0;
 //		walkSheet = new Texture("sprites/girl_sprite.png");
@@ -46,7 +48,6 @@ public class GoT implements ApplicationListener {
 	public void render () {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		System.out.println(Gdx.input.isKeyPressed(Keys.LEFT));
 
 		if (Gdx.input.isKeyPressed(Keys.LEFT))
 			spriteX -= Gdx.graphics.getDeltaTime() * spriteSpeed;
@@ -57,7 +58,8 @@ public class GoT implements ApplicationListener {
 		if(Gdx.input.isKeyPressed(Keys.DOWN))
 			spriteY -= Gdx.graphics.getDeltaTime() * spriteSpeed;
 		batch.begin();
-		batch.draw(spriteCharacter, (int)spriteX, (int)spriteY);
+//		spriteCharacter.draw(batch);
+		batch.draw(spriteCharacter, 0 ,0, 30, 30);
 		batch.end();
 //		Gdx.gl.glClearColor(ddd1, 0, 0, 1);
 //		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
