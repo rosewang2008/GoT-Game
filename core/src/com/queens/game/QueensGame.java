@@ -37,6 +37,9 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 	Rectangle charBounds;
 	Set<Integer> keysPressed;
 	Lock keyPressLock;
+	float cameraOffsetX;
+	float cameraOffsetY;
+	static float scrollSpeed = 32;
 
 	@Override
 	public void create () {
@@ -62,6 +65,9 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 		charBounds = new Rectangle(0, 0, walkSheet.getWidth()/13, walkSheet.getHeight()/21);
 		keysPressed = new HashSet<Integer>();
 		keyPressLock = new ReentrantLock();
+		System.out.println("camera position " + camera.position);
+		cameraOffsetX = 0;
+		cameraOffsetY = 0;
 	}
 
 	@Override
@@ -99,26 +105,35 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 
 	public void moveCharacter(int keycode) {
 		int stepDistance = 32;
+		float cameraDistance = stepDistance;
 	    switch (keycode) {
 				case Input.Keys.LEFT:
 					x -= stepDistance;
 					charBounds.x -= stepDistance;
-					fixCollisions(-stepDistance, 0);
+					camera.translate(-cameraDistance, 0);
+					cameraOffsetX -= cameraDistance;
+					fixCollisions(-stepDistance, 0, -cameraDistance, 0);
 					break;
 				case Input.Keys.RIGHT:
 					x += stepDistance;
 					charBounds.x += stepDistance;
-					fixCollisions(stepDistance, 0);
+					camera.translate(cameraDistance, 0);
+					cameraOffsetX += cameraDistance;
+					fixCollisions(stepDistance, 0, cameraDistance, 0);
 					break;
 				case Input.Keys.UP:
 					y += stepDistance;
 					charBounds.y += stepDistance;
-					fixCollisions(0, stepDistance);
+					camera.translate(0, cameraDistance);
+					cameraOffsetY += cameraDistance;
+					fixCollisions(0, stepDistance, 0 , cameraDistance);
 					break;
 				case Input.Keys.DOWN:
 					y -= stepDistance;
 					charBounds.y -= stepDistance;
-					fixCollisions(0, -stepDistance);
+					camera.translate(0, -cameraDistance);
+					cameraOffsetY -= cameraDistance;
+					fixCollisions(0, -stepDistance, 0, -cameraDistance);
 					break;
 		}
 
@@ -183,10 +198,10 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 
-	public void fixCollisions(float xDelta, float yDelta){
+	public void fixCollisions(float xDelta, float yDelta, float xDeltaCamera, float yDeltaCamera){
 		TiledMapTileLayer collisionLayer = (TiledMapTileLayer)map.getLayers().get(1);
-		int col = (int)(charBounds.x / collisionLayer.getTileWidth());
-		int row = (int)(charBounds.y / collisionLayer.getTileHeight());
+		int col = (int)((cameraOffsetX + charBounds.x) / collisionLayer.getTileWidth());
+		int row = (int)((cameraOffsetY + charBounds.y) / collisionLayer.getTileHeight());
 		System.out.println("tile height " + collisionLayer.getTileHeight() + " tile width " + collisionLayer.getTileWidth());
 
 		System.out.println("row " + row + " col " + col);
@@ -209,6 +224,9 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 			y -= yDelta;
 			charBounds.x -= xDelta;
 			charBounds.y -= yDelta;
+			camera.translate(-xDeltaCamera, -yDeltaCamera);
+			cameraOffsetX -= xDeltaCamera;
+			cameraOffsetY -= yDeltaCamera;
 		}
 
 		System.out.println(tile.getProperties().get("walkable"));
