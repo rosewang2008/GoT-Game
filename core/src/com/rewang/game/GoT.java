@@ -16,7 +16,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-
 import java.util.Arrays;
 
 // first class that will be run!
@@ -59,10 +58,10 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
         Gdx.input.setInputProcessor(this);
 
         // character
-//		batch = new SpriteBatch();
+		batch = new SpriteBatch();
 //		FileHandle spriteFileHandle = Gdx.files.internal("sprites/idle_girl.png");
-//		spriteTexture = new Texture(spriteFileHandle);
-//		spriteCharacter = new Sprite(spriteTexture);
+		spriteTexture = new Texture(Gdx.files.internal("sprites/pikachu.png"));
+		spriteCharacter = new Sprite(spriteTexture);
 //		walkSheet = new Texture("sprites/girl_sprite.png");
 //		TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/13, walkSheet.getHeight()/21);
 //		TextureRegion[] walkFrames = Arrays.copyOfRange(tmp[11], 0, 9);
@@ -85,23 +84,15 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
         mapRenderer.render();
 
 		// character
-//		batch.begin();
-//		spriteCharacter.setPosition(spriteX, spriteY);
-//		spriteCharacter.draw(batch);
-//		batch.end();
-//		spriteMove();
-
-        // background
-//        batch.begin();
+		batch.begin();
+		spriteCharacter.setPosition(spriteX, spriteY);
+		spriteCharacter.draw(batch);
+		batch.end();
+		spriteMove();
 
 	}
 
 	public void spriteMove() {
-		System.out.println(Gdx.input.isKeyPressed(Keys.LEFT));
-		System.out.println(Gdx.input.isKeyPressed(Keys.RIGHT));
-		System.out.println(Gdx.input.isKeyPressed(Keys.UP));
-		System.out.println(Gdx.input.isKeyPressed(Keys.DOWN));
-		System.out.println();
 		if (Gdx.input.isKeyPressed(Keys.LEFT))
 			spriteX--;
 		if(Gdx.input.isKeyPressed(Keys.RIGHT))
@@ -140,19 +131,20 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        if(keycode == Input.Keys.LEFT)
-            camera.translate(32,0);
-        if(keycode == Input.Keys.RIGHT)
-            camera.translate(-32,0);
-        if(keycode == Input.Keys.UP)
-            camera.translate(0,-32);
-        if(keycode == Input.Keys.DOWN)
-            camera.translate(0,32);
-        if(keycode == Input.Keys.NUM_1)
-            map.getLayers().get(0).setVisible(!map.getLayers().get(0).isVisible());
-        if(keycode == Input.Keys.NUM_2)
-            map.getLayers().get(1).setVisible(!map.getLayers().get(1).isVisible());
         return false;
+//        if(keycode == Input.Keys.LEFT)
+//            camera.translate(32,0);
+//        if(keycode == Input.Keys.RIGHT)
+//            camera.translate(-32,0);
+//        if(keycode == Input.Keys.UP)
+//            camera.translate(0,-32);
+//        if(keycode == Input.Keys.DOWN)
+//            camera.translate(0,32);
+//        if(keycode == Input.Keys.NUM_1)
+//            map.getLayers().get(0).setVisible(!map.getLayers().get(0).isVisible());
+//        if(keycode == Input.Keys.NUM_2)
+//            map.getLayers().get(1).setVisible(!map.getLayers().get(1).isVisible());
+//        return false;
     }
 
     @Override
