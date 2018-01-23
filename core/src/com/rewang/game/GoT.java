@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -26,6 +27,9 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
 	private Sprite spriteCharacter;
 	private int spriteX = 0;
 	private int spriteY = 0 ;
+
+    // character map layer
+    TiledMapTileLayer spriteLayer;
 
     // character movements
 	Animation<TextureRegion> walking;
@@ -62,10 +66,35 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
 //		FileHandle spriteFileHandle = Gdx.files.internal("sprites/idle_girl.png");
 		spriteTexture = new Texture(Gdx.files.internal("sprites/pikachu.png"));
 		spriteCharacter = new Sprite(spriteTexture);
-        float spriteHeight = spriteCharacter.getHeight();
-        float spriteWidth  = spriteCharacter.getWidth();
-        System.out.println(spriteHeight);
-        System.out.println(spriteWidth);
+
+        // character map layer
+        // the following is C/P from website
+//        // Create a new map layer
+//        TiledMapTileLayer tileLayer = new TiledMapTileLayer(mapWidth,mapHeight,64,64);
+//
+//        // Create a cell(tile) to add to the layer
+//        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+//
+//        // The sprite/tilesheet behind our new layer is a single image (our sprite)
+//        // Create a TextureRegion that is the entire size of our texture
+//        TextureRegion textureRegion = new TextureRegion(texture,64,64);
+//
+//        // Now set the graphic for our cell to our newly created region
+//        cell.setTile(new StaticTiledMapTile(textureRegion));
+//
+//        // Now set the cell at position 4,10 ( 8,20 in map coordinates ).  This is the position of a tree
+//        // Relative to 0,0 in our map which is the bottom left corner
+//        tileLayer.setCell(4,10,cell);
+//
+//        // Ok, I admit, this part is a gross hack.
+//        // Get the current top most layer from the map and store it
+//        MapLayer tempLayer = tiledMap.getLayers().get(tiledMap.getLayers().getCount()-1);
+//        // Now remove it
+//        tiledMap.getLayers().remove(tiledMap.getLayers().getCount()-1);
+//        // Now add our newly created layer
+//        tiledMap.getLayers().add(tileLayer);
+//        // Now add it back, now our new layer is not the top most one.
+//        tiledMap.getLayers().add(tempLayer);
 
 	}
 
