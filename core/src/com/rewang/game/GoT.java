@@ -62,12 +62,11 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
 //		FileHandle spriteFileHandle = Gdx.files.internal("sprites/idle_girl.png");
 		spriteTexture = new Texture(Gdx.files.internal("sprites/pikachu.png"));
 		spriteCharacter = new Sprite(spriteTexture);
-//		walkSheet = new Texture("sprites/girl_sprite.png");
-//		TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/13, walkSheet.getHeight()/21);
-//		TextureRegion[] walkFrames = Arrays.copyOfRange(tmp[11], 0, 9);
-//		walking = new Animation<TextureRegion>(0.1f, walkFrames);
-//        spriteCharacter = new Sprite(walking);
-//		stateTime = 0f;
+        float spriteHeight = spriteCharacter.getHeight();
+        float spriteWidth  = spriteCharacter.getWidth();
+        System.out.println(spriteHeight);
+        System.out.println(spriteWidth);
+
 	}
 
 	@Override
@@ -85,8 +84,7 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
 
 		// character
 		batch.begin();
-		spriteCharacter.setPosition(spriteX, spriteY);
-		spriteCharacter.draw(batch);
+        batch.draw(spriteTexture, spriteX, spriteY, spriteCharacter.getHeight()/2, spriteCharacter.getWidth()/2);
 		batch.end();
 		spriteMove();
 
