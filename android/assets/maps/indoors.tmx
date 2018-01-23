@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="8" tileheight="8" infinite="0" nextobjectid="27">
+ <tileset firstgid="1" source="house.tsx"/>
+ <layer name="Tile Layer 1" width="10" height="10">
+  <data encoding="csv">
+1918,1918,1918,1918,1918,1918,1918,1918,1918,1918,
+2024,2024,2024,2024,2024,2024,2024,2024,2024,2024,
+2130,2130,2130,2130,2130,2130,2130,2130,2130,2130,
+1918,1918,1918,1918,1918,1918,1918,1918,1918,1918,
+2024,2024,2024,2024,2024,2024,2024,2024,2024,2024,
+2130,2130,2130,2130,2130,2130,2130,2130,2130,2130,
+1918,1918,1918,1918,1918,1918,1918,1918,1918,1918,
+2024,2024,2024,2024,2024,2024,2024,2024,2024,2024,
+2130,2130,2130,2130,2130,2130,2130,2130,2130,2130,
+1918,1918,1918,1918,1918,1918,1918,1918,1918,1918
+</data>
+ </layer>
+ <objectgroup name="GameObjects">
+  <object id="18" name="StartingPoint" x="1.31275" y="63.6681" width="8" height="8"/>
+  <object id="22" name="stairs_1" x="0.752355" y="23.0221" width="30.6961" height="34.7588">
+   <properties>
+    <property name="exit_downstairs" value="goDow"/>
+   </properties>
+  </object>
+  <object id="23" name="exitHouse" x="48.3182" y="72.6108" width="23.4917" height="7.47464">
+   <properties>
+    <property name="exit_house" value=""/>
+   </properties>
+  </object>
+  <object id="24" x="19.4875" y="45.6487"/>
+ </objectgroup>
+ <layer name="Items" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+1964,1965,1966,1967,0,0,0,0,0,0,
+2070,2071,2072,2073,2074,2075,0,0,0,0,
+2176,2177,2178,2179,2180,2181,0,0,0,0,
+2282,2283,2284,2285,2286,2287,0,0,0,0,
+2388,2389,2390,2391,2392,2393,0,0,0,0,
+2494,2495,2496,2497,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,217,217,217,0
+</data>
+ </layer>
+</map>
