@@ -27,30 +27,19 @@ import java.util.concurrent.locks.ReentrantLock;
 public class QueensGame extends ApplicationAdapter implements InputProcessor{
 	SpriteBatch batch;
 	Animation<TextureRegion> walking;
+	Animation<TextureRegion> walkingLeft;
 	Texture walkSheet;
-	float stateTime;
-	float x;
-	float y;
 	TiledMap map;
 	OrthogonalTiledMapRenderer renderer;
 	OrthographicCamera camera;
-	Rectangle charBounds;
 	Set<Integer> keysPressed;
 	Lock keyPressLock;
-	float cameraOffsetX;
-	float cameraOffsetY;
 	static float scrollSpeed = 32;
+	Player player;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		walkSheet = new Texture("core/assets/sprites/girl_sprite.png");
-		TextureRegion[][] tmp = TextureRegion.split(walkSheet,
-				walkSheet.getWidth() / 13,
-				walkSheet.getHeight() / 21);
-		TextureRegion[] walkFrames = Arrays.copyOfRange(tmp[11], 0, 9);
-		walking = new Animation<TextureRegion>(0.1f, walkFrames);
-		stateTime = 0f;
 		camera = new OrthographicCamera();
 //		camera.setToOrtho(false, 30,20);
         camera.setToOrtho(false);
@@ -60,33 +49,21 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 		Gdx.input.setInputProcessor(this);
 //		renderer = new OrthogonalTiledMapRenderer(map, unitScale);
 		renderer = new OrthogonalTiledMapRenderer(map);
-		x = 0;
-		y = 0;
-		charBounds = new Rectangle(0, 0, walkSheet.getWidth()/13, walkSheet.getHeight()/21);
 		keysPressed = new HashSet<Integer>();
 		keyPressLock = new ReentrantLock();
 		System.out.println("camera position " + camera.position);
-		cameraOffsetX = 0;
-		cameraOffsetY = 0;
+		player = new Player(Gdx.graphics.getWidth()/2 - (Gdx.graphics.getWidth()/2)%32, Gdx.graphics.getHeight()/2 - (Gdx.graphics.getHeight()/2)%32);
 	}
 
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		stateTime += Gdx.graphics.getDeltaTime();
-		TextureRegion frame = walking.getKeyFrame(stateTime, true);
 		camera.update();
 		renderer.setView(camera);
 		renderer.render();
-//		for(int keycode : keysPressed){
-//		    moveCharacter(keycode);
-//		}
 		batch.begin();
-//		drawObjectOutlines(batch);
-//		drawSingleTile(batch);
-		drawCharacterOutline(batch);
-		batch.draw(frame, x, y);
+		player.draw(batch);
 		batch.end();
 	}
 	
@@ -99,42 +76,41 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 	@Override
 	public boolean keyDown(int keycode) {
 		setKeyPressed(keycode, true);
-		moveCharacter(keycode);
+		move(keycode);
 		return false;
 	}
 
-	public void moveCharacter(int keycode) {
+	public void move(int keycode) {
 		int stepDistance = 32;
 		float cameraDistance = stepDistance;
+		TiledMapTileLayer collisionLayer = (TiledMapTileLayer)map.getLayers().get(1);
+		float xDelta = 0;
+		float yDelta = 0;
+		Direction d = null;
 	    switch (keycode) {
 				case Input.Keys.LEFT:
-					x -= stepDistance;
-					charBounds.x -= stepDistance;
-					camera.translate(-cameraDistance, 0);
-					cameraOffsetX -= cameraDistance;
-					fixCollisions(-stepDistance, 0, -cameraDistance, 0);
+					xDelta -= cameraDistance;
+					d = Direction.LEFT;
 					break;
 				case Input.Keys.RIGHT:
-					x += stepDistance;
-					charBounds.x += stepDistance;
-					camera.translate(cameraDistance, 0);
-					cameraOffsetX += cameraDistance;
-					fixCollisions(stepDistance, 0, cameraDistance, 0);
+					xDelta += cameraDistance;
+					d = Direction.RIGHT;
 					break;
 				case Input.Keys.UP:
-					y += stepDistance;
-					charBounds.y += stepDistance;
-					camera.translate(0, cameraDistance);
-					cameraOffsetY += cameraDistance;
-					fixCollisions(0, stepDistance, 0 , cameraDistance);
+					yDelta += cameraDistance;
+					d = Direction.UP;
 					break;
 				case Input.Keys.DOWN:
-					y -= stepDistance;
-					charBounds.y -= stepDistance;
-					camera.translate(0, -cameraDistance);
-					cameraOffsetY -= cameraDistance;
-					fixCollisions(0, -stepDistance, 0, -cameraDistance);
+					yDelta -= cameraDistance;
+					d = Direction.DOWN;
 					break;
+		}
+		camera.translate(xDelta, yDelta);
+	    player.setCurrentDirection(d);
+	    player.move(xDelta, yDelta);
+		if(player.hasCollision(collisionLayer)){
+		    player.undoMove(xDelta, yDelta);
+			camera.translate(-xDelta, -yDelta);
 		}
 
 	}
@@ -198,44 +174,6 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 
-	public void fixCollisions(float xDelta, float yDelta, float xDeltaCamera, float yDeltaCamera){
-		TiledMapTileLayer collisionLayer = (TiledMapTileLayer)map.getLayers().get(1);
-		int col = (int)((cameraOffsetX + charBounds.x) / collisionLayer.getTileWidth());
-		int row = (int)((cameraOffsetY + charBounds.y) / collisionLayer.getTileHeight());
-		System.out.println("tile height " + collisionLayer.getTileHeight() + " tile width " + collisionLayer.getTileWidth());
-
-		System.out.println("row " + row + " col " + col);
-		TiledMapTileLayer.Cell cell = collisionLayer.getCell(col, row);
-		if(cell == null){
-			System.out.println("no cell");
-			return;
-		}
-		TiledMapTile tile = cell.getTile();
-		if(tile == null){
-			System.out.println("no tile");
-			return;
-		}
-		if(!tile.getProperties().containsKey("walkable")){
-			System.out.println("no walkable property");
-			return;
-		}
-		if(!(Boolean)tile.getProperties().get("walkable")){
-			x -= xDelta;
-			y -= yDelta;
-			charBounds.x -= xDelta;
-			charBounds.y -= yDelta;
-			camera.translate(-xDeltaCamera, -yDeltaCamera);
-			cameraOffsetX -= xDeltaCamera;
-			cameraOffsetY -= yDeltaCamera;
-		}
-
-		System.out.println(tile.getProperties().get("walkable"));
-
-
-	}
-
-
-
 	public void drawObjectOutlines(SpriteBatch batch){
 		MapLayer objectLayer = map.getLayers().get(1);
 		MapObjects objects = objectLayer.getObjects();
@@ -243,21 +181,12 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 			Rectangle objBound = rectObj.getRectangle();
 			float scale = 1.4f;
 			Rectangle scaledObjBound = new Rectangle(objBound.x/scale, objBound.y/scale, objBound.width/scale, objBound.height/scale);
-//			System.out.println("object position " + objBound.x + " " + objBound.y);
 			Pixmap p = new Pixmap((int)scaledObjBound.getWidth(), (int)scaledObjBound.getHeight(), Pixmap.Format.RGBA8888);
 			p.setColor(Color.CYAN);
 			p.fillRectangle(0, 0, (int)scaledObjBound.getWidth(), (int)scaledObjBound.getHeight());
 			Texture t = new Texture(p);
 			batch.draw(t, scaledObjBound.x, scaledObjBound.y);
 		}
-	}
-
-	public void drawCharacterOutline(SpriteBatch batch){
-	    Pixmap p = new Pixmap((int)charBounds.getWidth(), (int)charBounds.getHeight(), Pixmap.Format.RGBA8888);
-	    p.setColor(Color.PINK);
-	    p.fillRectangle(0, 0, (int)charBounds.getWidth(), (int)charBounds.getHeight());
-	    Texture t = new Texture(p);
-	    batch.draw(t, charBounds.x, charBounds.y);
 	}
 
 	public void drawSingleTile(SpriteBatch batch){
