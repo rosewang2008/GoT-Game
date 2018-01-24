@@ -20,21 +20,22 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class QueensGame extends ApplicationAdapter implements InputProcessor{
+public class QueensGame extends ApplicationAdapter{
 	SpriteBatch batch;
-	Animation<TextureRegion> walking;
-	Animation<TextureRegion> walkingLeft;
-	Texture walkSheet;
 	TiledMap map;
 	OrthogonalTiledMapRenderer renderer;
 	OrthographicCamera camera;
 	Set<Integer> keysPressed;
 	Lock keyPressLock;
 	static float scrollSpeed = 32;
+	static float stepDistance = 32;
 	Player player;
 
 	@Override
@@ -46,13 +47,14 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 		camera.update();
 		map = new TmxMapLoader().load("core/assets/maps/test.tmx");
 //		float unitScale = 1 / 32f;
-		Gdx.input.setInputProcessor(this);
 //		renderer = new OrthogonalTiledMapRenderer(map, unitScale);
 		renderer = new OrthogonalTiledMapRenderer(map);
 		keysPressed = new HashSet<Integer>();
 		keyPressLock = new ReentrantLock();
-		System.out.println("camera position " + camera.position);
-		player = new Player(Gdx.graphics.getWidth()/2 - (Gdx.graphics.getWidth()/2)%32, Gdx.graphics.getHeight()/2 - (Gdx.graphics.getHeight()/2)%32);
+		player = new Player(Gdx.graphics.getWidth()/2 - (Gdx.graphics.getWidth()/2)%32, Gdx.graphics.getHeight()/2 - (Gdx.graphics.getHeight()/2)%32, stepDistance, camera, (TiledMapTileLayer)map.getLayers().get(1));
+		Gdx.input.setInputProcessor(new PlayerInputProcessor(player));
+		CommunicationManager.openConnection();
+
 	}
 
 	@Override
@@ -70,124 +72,8 @@ public class QueensGame extends ApplicationAdapter implements InputProcessor{
 	@Override
 	public void dispose () {
 		batch.dispose();
-		walkSheet.dispose();
 	}
 
-	@Override
-	public boolean keyDown(int keycode) {
-		setKeyPressed(keycode, true);
-		move(keycode);
-		return false;
-	}
-
-	public void move(int keycode) {
-		int stepDistance = 32;
-		float cameraDistance = stepDistance;
-		TiledMapTileLayer collisionLayer = (TiledMapTileLayer)map.getLayers().get(1);
-		float xDelta = 0;
-		float yDelta = 0;
-		Direction d = null;
-	    switch (keycode) {
-				case Input.Keys.LEFT:
-					xDelta -= cameraDistance;
-					d = Direction.LEFT;
-					break;
-				case Input.Keys.RIGHT:
-					xDelta += cameraDistance;
-					d = Direction.RIGHT;
-					break;
-				case Input.Keys.UP:
-					yDelta += cameraDistance;
-					d = Direction.UP;
-					break;
-				case Input.Keys.DOWN:
-					yDelta -= cameraDistance;
-					d = Direction.DOWN;
-					break;
-		}
-		camera.translate(xDelta, yDelta);
-	    player.setCurrentDirection(d);
-	    player.move(xDelta, yDelta);
-		if(player.hasCollision(collisionLayer)){
-		    player.undoMove(xDelta, yDelta);
-			camera.translate(-xDelta, -yDelta);
-		}
-
-	}
-
-
-
-
-	@Override
-	public boolean keyUp(int keycode) {
-	    setKeyPressed(keycode, false);
-		return false;
-	}
-
-	public boolean getKeyPressed(int keycode){
-		keyPressLock.lock();
-		boolean isPressed = keysPressed.contains(keycode);
-		keyPressLock.unlock();
-		return isPressed;
-	}
-
-	public void setKeyPressed(int keycode, boolean isPressed){
-	    keyPressLock.lock();
-	    if(isPressed) {
-			keysPressed.add(keycode);
-		}
-		else{
-	    	keysPressed.remove(keycode);
-		}
-	    keyPressLock.unlock();
-
-	}
-
-
-	@Override
-	public boolean keyTyped(char character) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		return false;
-	}
-
-	public void drawObjectOutlines(SpriteBatch batch){
-		MapLayer objectLayer = map.getLayers().get(1);
-		MapObjects objects = objectLayer.getObjects();
-		for(RectangleMapObject rectObj : objects.getByType(RectangleMapObject.class)){
-			Rectangle objBound = rectObj.getRectangle();
-			float scale = 1.4f;
-			Rectangle scaledObjBound = new Rectangle(objBound.x/scale, objBound.y/scale, objBound.width/scale, objBound.height/scale);
-			Pixmap p = new Pixmap((int)scaledObjBound.getWidth(), (int)scaledObjBound.getHeight(), Pixmap.Format.RGBA8888);
-			p.setColor(Color.CYAN);
-			p.fillRectangle(0, 0, (int)scaledObjBound.getWidth(), (int)scaledObjBound.getHeight());
-			Texture t = new Texture(p);
-			batch.draw(t, scaledObjBound.x, scaledObjBound.y);
-		}
-	}
 
 	public void drawSingleTile(SpriteBatch batch){
 	    int size = 32;

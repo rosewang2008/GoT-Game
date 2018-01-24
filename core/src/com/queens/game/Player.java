@@ -1,6 +1,10 @@
 package com.queens.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,23 +24,27 @@ public class Player {
     private float stateTime;
     private float height;
     private float width;
-    private Rectangle bounds;
     private float screenX;
     private float screenY;
     private float worldX;
     private float worldY;
+    private Camera camera;
+    private float stepDistance;
+    private TiledMapTileLayer collisionMapLayer;
 
-    public Player(float startx, float starty){
+    public Player(float startx, float starty, float stepDistance, Camera c, TiledMapTileLayer collisionMapLayer){
         initAnimations();
         this.currentDirection = Direction.RIGHT;
         this.height = AnimationFactory.getAnimationHeight();
         this.width = AnimationFactory.getAnimationWidth();
-        bounds = new Rectangle(startx, starty, this.width, this.height);
-        worldX = startx;
-        worldY = starty;
-        screenX = startx;
-        screenY = starty;
-        stateTime = 0f;
+        this.worldX = startx;
+        this.worldY = starty;
+        this.screenX = startx;
+        this.screenY = starty;
+        this.stateTime = 0f;
+        this.camera = c;
+        this.stepDistance = stepDistance;
+        this.collisionMapLayer = collisionMapLayer;
     }
 
 
@@ -65,15 +73,36 @@ public class Player {
 
     }
 
-    public void move(float deltaX, float deltaY){
+    public void move(Direction d){
+        this.setCurrentDirection(d);
+        float deltaX = 0;
+        float deltaY = 0;
+        switch(d){
+            case UP:
+                deltaY += this.stepDistance;
+                break;
+            case DOWN:
+                deltaY -= this.stepDistance;
+                break;
+            case LEFT:
+                deltaX -= this.stepDistance;
+                break;
+            case RIGHT:
+                deltaX += this.stepDistance;
+                break;
+        }
         worldX += deltaX;
         worldY += deltaY;
+        this.camera.translate(deltaX, deltaY, 0);
+        if(this.hasCollision()){
+            undoMove(deltaX, deltaY);
+        }
     }
 
-    public boolean hasCollision(TiledMapTileLayer mapLayer){
-        int row = getRow(mapLayer);
-        int col = getCol(mapLayer);
-        TiledMapTileLayer.Cell cell = mapLayer.getCell(col, row);
+    public boolean hasCollision(){
+        int row = getRow(this.collisionMapLayer);
+        int col = getCol(this.collisionMapLayer);
+        TiledMapTileLayer.Cell cell = this.collisionMapLayer.getCell(col, row);
         if(cell == null){
             return false;
         }
@@ -84,19 +113,30 @@ public class Player {
         if(!tile.getProperties().containsKey("walkable")){
             return false;
         }
-        return (Boolean)tile.getProperties().get("walkable");
+        return !(Boolean)tile.getProperties().get("walkable");
 
     }
 
     public void undoMove(float deltaX, float deltaY){
         this.worldX -= deltaX;
         this.worldY -= deltaY;
+        this.camera.translate(-deltaX, -deltaY, 0);
     }
 
     public void draw(SpriteBatch batch){
         this.stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion frame = this.animations.get(this.currentDirection).getKeyFrame(this.stateTime, false);
         batch.draw(frame, this.screenX, this.screenY);
+
+    }
+
+    public void drawBoundaries(SpriteBatch batch){
+        Pixmap p = new Pixmap((int)this.width, (int)this.height, Pixmap.Format.RGBA8888);
+        p.setColor(Color.CYAN);
+        p.fillRectangle(0, 0, (int)width, (int)height);
+        Texture t = new Texture(p);
+        batch.draw(t, screenX, screenY);
+
 
     }
 
