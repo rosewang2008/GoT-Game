@@ -11,12 +11,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
+
 import java.util.Arrays;
 
 // first class that will be run!
@@ -39,6 +45,8 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
     // background
     TiledMap map;
     TiledMapRenderer mapRenderer;
+    MapObjects objects;
+    OrthogonalTiledMapRendererWithSprites tiledMapRenderer;
 
     // view
     OrthographicCamera camera;
@@ -56,10 +64,11 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
         camera.setToOrtho(false,w,h);
         camera.update();
 
-        // map
-        map = new TmxMapLoader().load("maps/indoors.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(map);
-        Gdx.input.setInputProcessor(this);
+
+        // Object layer
+//        MapLayer layer = map.getLayers().get("GameObjects");
+//        MapObjects objects = layer.getObjects();
+//        System.out.println(objects);
 
         // character
 		batch = new SpriteBatch();
@@ -67,36 +76,15 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
 		spriteTexture = new Texture(Gdx.files.internal("sprites/pikachu.png"));
 		spriteCharacter = new Sprite(spriteTexture);
 
-        // character map layer
-        // the following is C/P from website
-//        // Create a new map layer
-//        TiledMapTileLayer tileLayer = new TiledMapTileLayer(mapWidth,mapHeight,64,64);
-//
-//        // Create a cell(tile) to add to the layer
-//        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-//
-//        // The sprite/tilesheet behind our new layer is a single image (our sprite)
-//        // Create a TextureRegion that is the entire size of our texture
-//        TextureRegion textureRegion = new TextureRegion(texture,64,64);
-//
-//        // Now set the graphic for our cell to our newly created region
-//        cell.setTile(new StaticTiledMapTile(textureRegion));
-//
-//        // Now set the cell at position 4,10 ( 8,20 in map coordinates ).  This is the position of a tree
-//        // Relative to 0,0 in our map which is the bottom left corner
-//        tileLayer.setCell(4,10,cell);
-//
-//        // Ok, I admit, this part is a gross hack.
-//        // Get the current top most layer from the map and store it
-//        MapLayer tempLayer = tiledMap.getLayers().get(tiledMap.getLayers().getCount()-1);
-//        // Now remove it
-//        tiledMap.getLayers().remove(tiledMap.getLayers().getCount()-1);
-//        // Now add our newly created layer
-//        tiledMap.getLayers().add(tileLayer);
-//        // Now add it back, now our new layer is not the top most one.
-//        tiledMap.getLayers().add(tempLayer);
+        // map
+        map = new TmxMapLoader().load("maps/indoors.tmx");
+        tiledMapRenderer = new OrthogonalTiledMapRendererWithSprites(map);
+        tiledMapRenderer.addSprite(spriteCharacter);
+//        mapRenderer = new OrthogonalTiledMapRenderer(map);
+        Gdx.input.setInputProcessor(this);
 
 	}
+
 
 	@Override
 	public void render () {
@@ -108,14 +96,16 @@ public class GoT extends ApplicationAdapter implements InputProcessor {
         camera.update();
 
         // map
-        mapRenderer.setView(camera);
-        mapRenderer.render();
+//        mapRenderer.setView(camera);
+//        mapRenderer.render();
+        tiledMapRenderer.setView(camera);
+        tiledMapRenderer.render();
 
 		// character
 		batch.begin();
         batch.draw(spriteTexture, spriteX, spriteY, spriteCharacter.getHeight()/2, spriteCharacter.getWidth()/2);
-		batch.end();
-		spriteMove();
+        spriteMove();
+        batch.end();
 
 	}
 
