@@ -1,4 +1,4 @@
-package com.queens.game;
+package com.queens.game.client;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Rectangle;
-import com.queens.game.networking.CommunicationManager;
-import com.queens.game.networking.LocationUpdate;
-import com.queens.game.networking.Message;
+import com.queens.game.networking.LocationUpdateRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +31,7 @@ public class Player {
     private Camera camera;
     private float stepDistance;
     private TiledMapTileLayer collisionMapLayer;
+    private int id = 1;
 
     public Player(float startx, float starty, float stepDistance, Camera c, TiledMapTileLayer collisionMapLayer){
         initAnimations();
@@ -50,6 +48,9 @@ public class Player {
         this.collisionMapLayer = collisionMapLayer;
     }
 
+    public int getId(){
+        return this.id;
+    }
 
     private void initAnimations(){
         this.animations = new HashMap<Direction, Animation<TextureRegion>>();
@@ -94,14 +95,14 @@ public class Player {
                 deltaX += this.stepDistance;
                 break;
         }
-        LocationUpdate updateMessage = new LocationUpdate(worldX, worldY, worldX + deltaX, worldY + deltaY);
+        LocationUpdateRequest updateRequest= new LocationUpdateRequest(id, worldX, worldY, worldX + deltaX, worldY + deltaY);
         worldX += deltaX;
         worldY += deltaY;
         this.camera.translate(deltaX, deltaY, 0);
         if(this.hasCollision()){
             undoMove(deltaX, deltaY);
         }
-        CommunicationManager.sendMessageToServer(updateMessage, Message.Type.LOCATION_UPDATE);
+        Client.sendMessageToServer(updateRequest);
 
     }
 

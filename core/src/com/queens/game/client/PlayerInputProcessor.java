@@ -1,4 +1,4 @@
-package com.queens.game;
+package com.queens.game.client;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;

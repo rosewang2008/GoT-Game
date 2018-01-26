@@ -1,4 +1,4 @@
-package com.queens.game;
+package com.queens.game.client;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.queens.game.networking.CommunicationManager;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -40,8 +39,13 @@ public class QueensGame extends ApplicationAdapter{
 		keyPressLock = new ReentrantLock();
 		player = new Player(Gdx.graphics.getWidth()/2 - (Gdx.graphics.getWidth()/2)%32, Gdx.graphics.getHeight()/2 - (Gdx.graphics.getHeight()/2)%32, stepDistance, camera, (TiledMapTileLayer)map.getLayers().get(1));
 		Gdx.input.setInputProcessor(new PlayerInputProcessor(player));
-		CommunicationManager.openConnection();
-
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Client.start();
+			}
+		});
+		t.start();
 	}
 
 	@Override

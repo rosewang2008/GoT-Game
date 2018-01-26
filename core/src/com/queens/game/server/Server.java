@@ -3,18 +3,15 @@ package com.queens.game.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.queens.game.networking.LocationUpdate;
+import com.queens.game.networking.LocationUpdateRequest;
 import com.queens.game.networking.Message;
+import com.queens.game.networking.MessageAdapter;
+import com.queens.game.networking.Request;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.queens.game.networking.Message.Type.LOCATION_UPDATE;
 
 /**
  * Created by aditisri on 1/24/18.
@@ -43,11 +40,12 @@ public class Server {
             try {
                 Socket s = this.socket.accept();
                 JsonReader reader = new JsonReader(new InputStreamReader(s.getInputStream()));
-                Message m = this.g.fromJson(reader, Message.class);
+                Request req = this.g.fromJson(reader, Message.class);
+                System.out.println(req);
                 Thread t = null;
-                switch(m.getType()){
+                switch(req.getType()){
                     case LOCATION_UPDATE:
-                        t = new Thread(new LocationUpdateHandler((LocationUpdate) m));
+                        t = new Thread(new LocationUpdateHandler((LocationUpdateRequest) req));
                 }
                 t.start();
             } catch (IOException e) {
