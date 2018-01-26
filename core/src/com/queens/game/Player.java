@@ -11,6 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
+import com.queens.game.networking.CommunicationManager;
+import com.queens.game.networking.LocationUpdate;
+import com.queens.game.networking.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,12 +94,15 @@ public class Player {
                 deltaX += this.stepDistance;
                 break;
         }
+        LocationUpdate updateMessage = new LocationUpdate(worldX, worldY, worldX + deltaX, worldY + deltaY);
         worldX += deltaX;
         worldY += deltaY;
         this.camera.translate(deltaX, deltaY, 0);
         if(this.hasCollision()){
             undoMove(deltaX, deltaY);
         }
+        CommunicationManager.sendMessageToServer(updateMessage, Message.Type.LOCATION_UPDATE);
+
     }
 
     public boolean hasCollision(){
