@@ -39,14 +39,7 @@ public class Server {
         while (true) {
             try {
                 Socket s = this.socket.accept();
-                JsonReader reader = new JsonReader(new InputStreamReader(s.getInputStream()));
-                Request req = this.g.fromJson(reader, Message.class);
-                System.out.println(req);
-                Thread t = null;
-                switch(req.getType()){
-                    case LOCATION_UPDATE:
-                        t = new Thread(new LocationUpdateHandler((LocationUpdateRequest) req));
-                }
+                Thread t = new Thread(new RequestListener(s));
                 t.start();
             } catch (IOException e) {
                 e.printStackTrace();
