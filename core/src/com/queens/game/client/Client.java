@@ -3,10 +3,7 @@ package com.queens.game.client;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.GsonBuilder;
-import com.queens.game.networking.Message;
-import com.queens.game.networking.Request;
-import com.queens.game.networking.Response;
-import com.queens.game.networking.MessageAdapter;
+import com.queens.game.networking.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -53,13 +50,27 @@ public class Client{
         }
     }
 
-    public static void start(){
+    public static void start(QueensGame game){
         init();
         while(true){
             JsonReader reader = new JsonReader(IN);
             Response res = GSON.fromJson(reader, Message.class);
             resolveRequest(res.getRequestId());
-
+            Thread t = null;
+            switch(res.getType()){
+                case LOCATION_UPDATE:
+                    t = new Thread(new LocationUpdateHandler());
+                    break;
+                case NEW_PLAYER:
+                    t = new Thread(new NewPlayerHandler((NewPlayerResponse) res, game));
+                    break;
+                case SCOUTING:
+                    t = new Thread(new ScoutingHandler());
+                    break;
+            }
+            if(t != null){
+                t.start();
+            }
         }
     }
 

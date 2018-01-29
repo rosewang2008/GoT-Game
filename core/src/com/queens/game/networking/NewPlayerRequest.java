@@ -2,7 +2,6 @@ package com.queens.game.networking;
 
 import com.queens.game.client.Client;
 
-import java.io.OutputStreamWriter;
 
 /**
  * Created by aditisri on 1/26/18.
@@ -25,4 +24,6 @@ public class NewPlayerRequest implements Request{
     public int getId() {
         return this.id;
     }
+
+
 }

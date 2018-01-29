@@ -15,12 +15,28 @@ public class GameManager {
             this.y = y;
         }
     }
+
     private static Map<Integer, Location> PLAYER_LOCATIONS = new HashMap<Integer, Location>();
     private static int MAX_PLAYER_ID= 0;
 //    private static TiledMap map = new TmxMapLoader().load("core/assets/maps/test.tmx");
 
     public static void updatePlayerLocation(int playerId, Location oldLocation, Location newLocation){
         PLAYER_LOCATIONS.put(playerId, newLocation);
+    }
+
+    public static int getUniquePlayerId(){
+        MAX_PLAYER_ID++;
+        return MAX_PLAYER_ID;
+    }
+
+    public static int registerNewPlayer(){
+        int playerId = getUniquePlayerId();
+        PLAYER_LOCATIONS.put(playerId, new Location(0, 0));
+        return playerId;
+    }
+
+    public static void broadcastPlayers(){
+
     }
 
     public static boolean hasCollision(){

@@ -3,10 +3,7 @@ package com.queens.game.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.queens.game.networking.LocationUpdateRequest;
-import com.queens.game.networking.Message;
-import com.queens.game.networking.MessageAdapter;
-import com.queens.game.networking.Request;
+import com.queens.game.networking.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -43,9 +40,10 @@ public class RequestListener implements Runnable{
             Thread t = null;
             switch(req.getType()){
                 case LOCATION_UPDATE:
-                    t = new Thread(new LocationUpdateHandler((LocationUpdateRequest) req));
+                    t = new Thread(new LocationUpdateHandler((LocationUpdateRequest) req, this.out, this.builder));
                     break;
                 case NEW_PLAYER:
+                    t = new Thread(new NewPlayerHandler((NewPlayerRequest) req, this.out, this.builder));
                     break;
             }
             if(t != null) {

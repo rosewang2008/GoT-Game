@@ -31,9 +31,9 @@ public class Player {
     private Camera camera;
     private float stepDistance;
     private TiledMapTileLayer collisionMapLayer;
-    private int id = 1;
+    private int id;
 
-    public Player(float startx, float starty, float stepDistance, Camera c, TiledMapTileLayer collisionMapLayer){
+    public Player(int id, float startx, float starty, float stepDistance, Camera c, TiledMapTileLayer collisionMapLayer){
         initAnimations();
         this.currentDirection = Direction.RIGHT;
         this.height = AnimationFactory.getAnimationHeight();
@@ -46,6 +46,7 @@ public class Player {
         this.camera = c;
         this.stepDistance = stepDistance;
         this.collisionMapLayer = collisionMapLayer;
+        this.id = id;
     }
 
     public int getId(){

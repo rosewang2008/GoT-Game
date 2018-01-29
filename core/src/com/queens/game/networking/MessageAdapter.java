@@ -32,7 +32,7 @@ public class MessageAdapter implements JsonSerializer, JsonDeserializer{
             jsonObject.addProperty(CHILD_TYPE, Message.Children.REQUEST.toString());
         }
         else if(m instanceof Response){
-            jsonObject.addProperty(CHILD_TYPE, Message.Children.REQUEST.toString());
+            jsonObject.addProperty(CHILD_TYPE, Message.Children.RESPONSE.toString());
         }
         jsonObject.addProperty(TYPE, m.getType().toString());
         jsonObject.add(CONTENT, context.serialize(src));
