@@ -60,8 +60,24 @@ public class Player {
         }
     }
 
+    public float getWorldX(){
+        return this.worldX;
+    }
+
+    public float getWorldY(){
+        return this.worldY;
+    }
+
+    public float getScreenX(){
+        return this.screenX;
+    }
+
+    public float getScreenY(){
+        return this.screenY;
+    }
+
     public void setCurrentDirection(Direction d){
-        stateTime = 0f;
+        this.stateTime = 0f;
         this.currentDirection = d;
     }
 

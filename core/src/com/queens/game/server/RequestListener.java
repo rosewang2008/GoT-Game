@@ -3,6 +3,8 @@ package com.queens.game.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import com.queens.game.client.*;
+import com.queens.game.server.ScoutingHandler;
 import com.queens.game.networking.*;
 
 import java.io.IOException;
@@ -18,9 +20,11 @@ public class RequestListener implements Runnable{
     private OutputStreamWriter out;
     private GsonBuilder builder;
     private Socket socket;
+    private Server server;
 
-    public RequestListener(Socket s){
+    public RequestListener(Server server, Socket s){
         try {
+            this.server = server;
             this.in = new InputStreamReader(s.getInputStream());
             this.out = new OutputStreamWriter(s.getOutputStream());
             this.builder = new GsonBuilder();
@@ -43,8 +47,11 @@ public class RequestListener implements Runnable{
                     t = new Thread(new LocationUpdateHandler((LocationUpdateRequest) req, this.out, this.builder));
                     break;
                 case NEW_PLAYER:
-                    t = new Thread(new NewPlayerHandler((NewPlayerRequest) req, this.out, this.builder));
+                    t = new Thread(new NewPlayerHandler((NewPlayerRequest) req, this.server, this.out));
                     break;
+                case SCOUTING:
+                    t = new Thread(new ScoutingHandler((ScoutingRequest) req, this.server, this.out));
+
             }
             if(t != null) {
                 t.start();

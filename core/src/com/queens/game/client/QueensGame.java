@@ -5,17 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.queens.game.networking.NewPlayerRequest;
-import com.queens.game.networking.NewPlayerResponse;
-import com.queens.game.networking.Response;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 public class QueensGame extends ApplicationAdapter{
 	SpriteBatch batch;
@@ -28,6 +24,16 @@ public class QueensGame extends ApplicationAdapter{
 	static float stepDistance = 32;
 	Player player;
 	boolean isGoing;
+	List<Location> otherPlayers;
+
+	public class Location{
+		public float x;
+		public float y;
+		public Location(float x, float y){
+			this.x = x;
+			this.y = y;
+		}
+	}
 
 	@Override
 	public void create () {
@@ -51,8 +57,25 @@ public class QueensGame extends ApplicationAdapter{
 //		});
 //		t.start();
 		Client.sendMessageToServer(new NewPlayerRequest());
+		otherPlayers = new ArrayList<Location>();
+
 
 	}
+
+	public void drawPlayerShadow(Location loc, SpriteBatch batch){
+		Pixmap p = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
+		p.setColor(Color.RED);
+		p.fillRectangle(0, 0, 32, 32);
+		batch.draw(new Texture(p), loc.x, loc.y);
+
+	}
+
+	public Location getLocationRelativeToPlayer(Location loc){
+	    float xDelta = loc.x - this.player.getWorldX();
+	    float yDelta = loc.y - this.player.getWorldY();
+        return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta);
+	}
+
 
 	public Camera getCamera(){
 		return this.camera;
@@ -75,7 +98,17 @@ public class QueensGame extends ApplicationAdapter{
 	}
 
 	public void start(){
+	    Thread t = new Thread(new ScoutingTimer(500, this.player.getId()));
+	    t.start();
 		this.isGoing= true;
+	}
+
+	public void setOtherPlayers(List<Float> xLocations, List<Float> yLocations){
+	    List<Location> locations = new ArrayList<Location>();
+	    for(int i = 0; i < xLocations.size(); i++){
+	    	locations.add(getLocationRelativeToPlayer(new Location(xLocations.get(i), yLocations.get(i))));
+		}
+		this.otherPlayers = locations;
 	}
 
 
@@ -89,6 +122,10 @@ public class QueensGame extends ApplicationAdapter{
 			renderer.render();
 			batch.begin();
 			player.draw(batch);
+			for (Location l : otherPlayers){
+			    drawPlayerShadow(l, batch);
+			}
+
 			batch.end();
 		}
 	}
@@ -98,13 +135,4 @@ public class QueensGame extends ApplicationAdapter{
 		batch.dispose();
 	}
 
-
-	public void drawSingleTile(SpriteBatch batch){
-	    int size = 32;
-	    Pixmap p = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-	    p.setColor(Color.CYAN);
-	    p.fillRectangle(0, 0, size, size);
-	    batch.draw(new Texture(p), 0, 0);
-
-	}
 }

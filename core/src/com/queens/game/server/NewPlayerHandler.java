@@ -14,23 +14,17 @@ import java.io.OutputStreamWriter;
  */
 public class NewPlayerHandler implements Runnable{
     private NewPlayerRequest request;
+    private Server server;
     private OutputStreamWriter out;
-    private GsonBuilder builder;
-    public NewPlayerHandler(NewPlayerRequest request, OutputStreamWriter out, GsonBuilder builder){
+    public NewPlayerHandler(NewPlayerRequest request, Server server, OutputStreamWriter out){
         this.request = request;
+        this.server = server;
         this.out = out;
-        this.builder = builder;
     }
 
     @Override
     public void run() {
         int newPlayerId = GameManager.registerNewPlayer();
-        Gson g = builder.create();
-        g.toJson(new NewPlayerResponse(request.getId(), newPlayerId), Message.class, this.out);
-        try {
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        server.sendMessageToClient(new NewPlayerResponse(request.getId(), newPlayerId), this.out);
     }
 }

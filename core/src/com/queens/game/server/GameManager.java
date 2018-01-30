@@ -1,6 +1,9 @@
 package com.queens.game.server;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,12 +34,23 @@ public class GameManager {
 
     public static int registerNewPlayer(){
         int playerId = getUniquePlayerId();
-        PLAYER_LOCATIONS.put(playerId, new Location(0, 0));
+        PLAYER_LOCATIONS.put(playerId, new Location(320, 224));
         return playerId;
     }
 
-    public static void broadcastPlayers(){
+    public static List<Float> getLocations(boolean xDirection){
+        List<Float> locations = new ArrayList<Float>();
+        for(Location l : PLAYER_LOCATIONS.values()){
+            if(xDirection)
+                locations.add(l.x);
+            else
+                locations.add(l.y);
+        }
+        return locations;
+    }
 
+    public static Map<Integer, Location> getAllPlayerLocations(){
+        return PLAYER_LOCATIONS;
     }
 
     public static boolean hasCollision(){

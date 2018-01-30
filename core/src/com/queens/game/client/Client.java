@@ -65,7 +65,7 @@ public class Client{
                     t = new Thread(new NewPlayerHandler((NewPlayerResponse) res, game));
                     break;
                 case SCOUTING:
-                    t = new Thread(new ScoutingHandler());
+                    t = new Thread(new ScoutingHandler((ScoutingResponse) res, game));
                     break;
             }
             if(t != null){

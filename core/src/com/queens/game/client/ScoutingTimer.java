@@ -24,8 +24,7 @@ public class ScoutingTimer implements Runnable{
     public void start(){
         this.startTime = System.currentTimeMillis();
         while(true){
-            if(this.timeElapsed()%this.frequency == 0){
-
+            if(this.timeElapsed() != 0 && this.timeElapsed()%this.frequency == 0){
                 Client.sendMessageToServer(new ScoutingRequest(this.playerId));
                 this.startTime = System.currentTimeMillis();
             }

@@ -2,14 +2,10 @@ package com.queens.game.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-import com.queens.game.networking.LocationUpdateRequest;
-import com.queens.game.networking.Message;
-import com.queens.game.networking.MessageAdapter;
-import com.queens.game.networking.Request;
+import com.queens.game.networking.*;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -39,12 +35,23 @@ public class Server {
         while (true) {
             try {
                 Socket s = this.socket.accept();
-                Thread t = new Thread(new RequestListener(s));
+                Thread t = new Thread(new RequestListener(this, s));
                 t.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+    }
+
+    public void sendMessageToClient(Response res, OutputStreamWriter out){
+        this.g.toJson(res, Message.class, out);
+        try {
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
