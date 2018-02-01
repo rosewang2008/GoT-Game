@@ -1,22 +1,23 @@
 package com.queens.game.client;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.queens.game.networking.Direction;
+import com.queens.game.networking.Environment;
+import com.queens.game.networking.EnvironmentSwitchRequest;
 import com.queens.game.networking.LocationUpdateRequest;
-import com.queens.game.networking.Request;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -59,6 +60,10 @@ public class Player {
             this.animations.put(d, AnimationFactory.getAnimation(d));
         }
     }
+
+    public void setWorldX(float x){ this.worldX = x; }
+
+    public void setWorldY(float y){this.worldY = y;}
 
     public float getWorldX(){
         return this.worldX;
@@ -121,10 +126,12 @@ public class Player {
         for(int i = layers.size()-1; i >=0; i--){
             TiledMapTileLayer layer = (TiledMapTileLayer) layers.get(i);
             if (this.hasCollision(layer)) {
-                undoMove(deltaX, deltaY);
+                System.out.println("got to collision");
                 TiledMapTileLayer.Cell cell = getCell(layer);
+                undoMove(deltaX, deltaY);
                 if (cellHasProperty(cell, "objectType")) {
                     String objectType = (String) getProperty(cell, "objectType");
+                    System.out.println(objectType);
                     respondToCollision(cell, objectType);
                 }
                 break;
@@ -154,6 +161,9 @@ public class Player {
         if(tile == null){
             return false;
         }
+        Iterator keys = tile.getProperties().getKeys();
+        System.out.println("======");
+        while(keys.hasNext()) System.out.println(keys.next());
         return tile.getProperties().containsKey(property);
     }
 
@@ -162,18 +172,15 @@ public class Player {
     }
 
     public void switchEnvironment(Environment env){
-        this.game.switchEnvironment(env);
-        this.worldX = screenX;
-        this.worldY = screenY;
+        Client.sendMessageToServer(new EnvironmentSwitchRequest(this.id, env));
+        game.waitForServer();
     }
 
 
     public void respondToCollision(TiledMapTileLayer.Cell cell, String objectType){
         switch (ObjectHierarchy.valueOf(objectType)){
             case HOUSE:
-                System.out.println("sensed house");
                 boolean isEntrance = (Boolean) getProperty(cell,"entrance");
-                System.out.println("is entrance " + isEntrance);
                 if(isEntrance) switchEnvironment(Environment.INDOORS);
                 break;
             case PLAYER:
@@ -181,6 +188,10 @@ public class Player {
             case BED:
                 break;
             case TABLE:
+                break;
+            case DOOR:
+                boolean isExit = (Boolean) getProperty(cell, "entrance");
+                if(isExit) switchEnvironment(Environment.OUTDOORS);
                 break;
         }
     }
@@ -204,8 +215,6 @@ public class Player {
         p.fillRectangle(0, 0, (int)width, (int)height);
         Texture t = new Texture(p);
         batch.draw(t, screenX, screenY);
-
-
     }
 
 }

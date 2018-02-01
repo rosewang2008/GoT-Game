@@ -51,6 +51,9 @@ public class RequestListener implements Runnable{
                     break;
                 case SCOUTING:
                     t = new Thread(new ScoutingHandler((ScoutingRequest) req, this.server, this.out));
+                    break;
+                case ENVIRONMENT_SWITCH:
+                    t = new Thread(new EnvironmentSwitchHandler((EnvironmentSwitchRequest) req, this.server, this.out));
 
             }
             if(t != null) {

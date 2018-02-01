@@ -1,4 +1,4 @@
-package com.queens.game.client;
+package com.queens.game.networking;
 
 /**
  * Created by aditisri on 1/21/18.

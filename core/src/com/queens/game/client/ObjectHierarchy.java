@@ -7,5 +7,6 @@ public enum ObjectHierarchy{
     HOUSE,
     PLAYER,
     BED,
-    TABLE
+    TABLE,
+    DOOR
 }

@@ -20,9 +20,6 @@ public class LocationUpdateHandler implements Runnable{
 
     @Override
     public void run() {
-        GameManager.Location oldLocation = new GameManager.Location(update.getOldX(), update.getOldY());
-        GameManager.Location newLocation = new GameManager.Location(update.getNewX(), update.getNewY());
-        GameManager.updatePlayerLocation(update.getPlayerId(), oldLocation, newLocation);
-
+        GameManager.updatePlayerLocation(update.getPlayerId(), update.getNewX(), update.getNewY());
     }
 }

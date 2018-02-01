@@ -11,7 +11,7 @@ public interface Message {
     }
 
     enum Type{
-        LOCATION_UPDATE, NEW_PLAYER, SCOUTING
+        LOCATION_UPDATE, NEW_PLAYER, SCOUTING, ENVIRONMENT_SWITCH
     }
 
     Type getType();

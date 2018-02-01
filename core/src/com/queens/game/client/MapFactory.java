@@ -2,6 +2,7 @@ package com.queens.game.client;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.queens.game.networking.Environment;
 
 /**
  * Created by aditisri on 1/31/18.

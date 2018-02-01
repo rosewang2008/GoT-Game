@@ -2,6 +2,7 @@ package com.queens.game.client;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.queens.game.networking.Direction;
 
 /**
  * Created by aditisri on 1/24/18.

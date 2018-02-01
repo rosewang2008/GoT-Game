@@ -64,6 +64,15 @@ public class MessageAdapter implements JsonSerializer, JsonDeserializer{
                     case RESPONSE:
                         return ScoutingResponse.class;
                 }
+                break;
+            case ENVIRONMENT_SWITCH:
+                switch(childType){
+                    case REQUEST:
+                        return EnvironmentSwitchRequest.class;
+                    case RESPONSE:
+                        return EnvironmentSwitchResponse.class;
+                }
+                break;
         }
         return null;
     }

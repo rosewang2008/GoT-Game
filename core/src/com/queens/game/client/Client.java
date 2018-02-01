@@ -67,6 +67,8 @@ public class Client{
                 case SCOUTING:
                     t = new Thread(new ScoutingHandler((ScoutingResponse) res, game));
                     break;
+                case ENVIRONMENT_SWITCH:
+                    t = new Thread(new EnvironmentSwitchHandler((EnvironmentSwitchResponse) res, game));
             }
             if(t != null){
                 t.start();

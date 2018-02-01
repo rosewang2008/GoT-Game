@@ -214,4 +214,32 @@
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
+ <tile id="202">
+  <properties>
+   <property name="entrance" type="bool" value="true"/>
+   <property name="objectType" value="DOOR"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="203">
+  <properties>
+   <property name="entrance" type="bool" value="true"/>
+   <property name="objectType" value="DOOR"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="218">
+  <properties>
+   <property name="entrance" type="bool" value="true"/>
+   <property name="objectType" value="DOOR"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="219">
+  <properties>
+   <property name="entrance" type="bool" value="true"/>
+   <property name="objectType" value="DOOR"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
 </tileset>

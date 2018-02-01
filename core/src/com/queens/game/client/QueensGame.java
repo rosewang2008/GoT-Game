@@ -5,8 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.queens.game.networking.Environment;
 import com.queens.game.networking.NewPlayerRequest;
 
 import java.util.*;
@@ -51,6 +51,7 @@ public class QueensGame extends ApplicationAdapter{
 		keyPressLock = new ReentrantLock();
 		Client.sendMessageToServer(new NewPlayerRequest());
 		otherPlayers = new ArrayList<Location>();
+		System.out.println(camera.position);
 	}
 
 	public void drawPlayerShadow(Location loc, SpriteBatch batch){
@@ -60,15 +61,26 @@ public class QueensGame extends ApplicationAdapter{
 		batch.draw(new Texture(p), loc.x, loc.y);
 	}
 
+	public void waitForServer(){
+	    isGoing = false;
+	}
+
+	public void resumePlay(){
+		isGoing = true;
+	}
+
 	public Location getLocationRelativeToPlayer(Location loc){
 	    float xDelta = loc.x - this.player.getWorldX();
 	    float yDelta = loc.y - this.player.getWorldY();
         return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta);
 	}
 
-	public void switchEnvironment(Environment env){
+	public void switchEnvironment(Environment env, float x, float y){
 		setMap(MapFactory.getMap(env));
 		renderer = new OrthogonalTiledMapRenderer(this.map);
+		camera.translate(320-camera.position.x, 240-camera.position.y, 0);
+		player.setWorldX(player.getScreenX());
+		player.setWorldY(player.getScreenY());
 	}
 
 	public Camera getCamera(){
