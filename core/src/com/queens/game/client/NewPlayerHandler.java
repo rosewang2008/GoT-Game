@@ -25,7 +25,7 @@ public class NewPlayerHandler implements Runnable{
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
-                Player newPlayer = new Player(res.getNewPlayerId(),320, 224, game.getStepDistance(), game.getCamera(), (TiledMapTileLayer)game.getMap().getLayers().get(1));
+                Player newPlayer = new Player(res.getNewPlayerId(),320, 224, game);
                 game.setPlayer(newPlayer);
                 game.setPlayerInputHandler(new PlayerInputProcessor(newPlayer));
                 game.start();

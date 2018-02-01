@@ -8,10 +8,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.queens.game.networking.LocationUpdateRequest;
+import com.queens.game.networking.Request;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,12 +32,10 @@ public class Player {
     private float screenY;
     private float worldX;
     private float worldY;
-    private Camera camera;
-    private float stepDistance;
-    private TiledMapTileLayer collisionMapLayer;
     private int id;
+    private QueensGame game;
 
-    public Player(int id, float startx, float starty, float stepDistance, Camera c, TiledMapTileLayer collisionMapLayer){
+    public Player(int id, float startx, float starty, QueensGame game){
         initAnimations();
         this.currentDirection = Direction.RIGHT;
         this.height = AnimationFactory.getAnimationHeight();
@@ -43,10 +45,8 @@ public class Player {
         this.screenX = startx;
         this.screenY = starty;
         this.stateTime = 0f;
-        this.camera = c;
-        this.stepDistance = stepDistance;
-        this.collisionMapLayer = collisionMapLayer;
         this.id = id;
+        this.game = game;
     }
 
     public int getId(){
@@ -98,35 +98,55 @@ public class Player {
         this.setCurrentDirection(d);
         float deltaX = 0;
         float deltaY = 0;
+        float stepDistance = game.getStepDistance();
         switch(d){
             case UP:
-                deltaY += this.stepDistance;
+                deltaY += stepDistance;
                 break;
             case DOWN:
-                deltaY -= this.stepDistance;
+                deltaY -= stepDistance;
                 break;
             case LEFT:
-                deltaX -= this.stepDistance;
+                deltaX -= stepDistance;
                 break;
             case RIGHT:
-                deltaX += this.stepDistance;
+                deltaX += stepDistance;
                 break;
         }
         LocationUpdateRequest updateRequest= new LocationUpdateRequest(id, worldX, worldY, worldX + deltaX, worldY + deltaY);
         worldX += deltaX;
         worldY += deltaY;
-        this.camera.translate(deltaX, deltaY, 0);
-        if(this.hasCollision()){
-            undoMove(deltaX, deltaY);
+        this.game.getCamera().translate(deltaX, deltaY, 0);
+        MapLayers layers = this.game.getMap().getLayers();
+        for(int i = layers.size()-1; i >=0; i--){
+            TiledMapTileLayer layer = (TiledMapTileLayer) layers.get(i);
+            if (this.hasCollision(layer)) {
+                undoMove(deltaX, deltaY);
+                TiledMapTileLayer.Cell cell = getCell(layer);
+                if (cellHasProperty(cell, "objectType")) {
+                    String objectType = (String) getProperty(cell, "objectType");
+                    respondToCollision(cell, objectType);
+                }
+                break;
+            }
         }
         Client.sendMessageToServer(updateRequest);
-
     }
 
-    public boolean hasCollision(){
-        int row = getRow(this.collisionMapLayer);
-        int col = getCol(this.collisionMapLayer);
-        TiledMapTileLayer.Cell cell = this.collisionMapLayer.getCell(col, row);
+    public TiledMapTileLayer.Cell getCell(TiledMapTileLayer layer){
+        int row = getRow(layer);
+        int col = getCol(layer);
+        return layer.getCell(col, row);
+    }
+
+    public boolean hasCollision(TiledMapTileLayer layer){
+        TiledMapTileLayer.Cell cell = getCell(layer);
+        if(!cellHasProperty(cell, "walkable"))
+            return false;
+        return !(Boolean) getProperty(cell, "walkable");
+    }
+
+    public boolean cellHasProperty(TiledMapTileLayer.Cell cell, String property){
         if(cell == null){
             return false;
         }
@@ -134,17 +154,41 @@ public class Player {
         if(tile == null){
             return false;
         }
-        if(!tile.getProperties().containsKey("walkable")){
-            return false;
-        }
-        return !(Boolean)tile.getProperties().get("walkable");
+        return tile.getProperties().containsKey(property);
+    }
 
+    public Object getProperty(TiledMapTileLayer.Cell cell, String property){
+        return cell.getTile().getProperties().get(property);
+    }
+
+    public void switchEnvironment(Environment env){
+        this.game.switchEnvironment(env);
+        this.worldX = screenX;
+        this.worldY = screenY;
+    }
+
+
+    public void respondToCollision(TiledMapTileLayer.Cell cell, String objectType){
+        switch (ObjectHierarchy.valueOf(objectType)){
+            case HOUSE:
+                System.out.println("sensed house");
+                boolean isEntrance = (Boolean) getProperty(cell,"entrance");
+                System.out.println("is entrance " + isEntrance);
+                if(isEntrance) switchEnvironment(Environment.INDOORS);
+                break;
+            case PLAYER:
+                break;
+            case BED:
+                break;
+            case TABLE:
+                break;
+        }
     }
 
     public void undoMove(float deltaX, float deltaY){
         this.worldX -= deltaX;
         this.worldY -= deltaY;
-        this.camera.translate(-deltaX, -deltaY, 0);
+        this.game.getCamera().translate(-deltaX, -deltaY, 0);
     }
 
     public void draw(SpriteBatch batch){
@@ -163,7 +207,5 @@ public class Player {
 
 
     }
-
-
 
 }

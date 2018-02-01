@@ -7,4 +7,7 @@ public interface Request extends Message{
 
     int getId();
 
+    int getPlayerId();
+
+
 }

@@ -15,7 +15,6 @@ public class MessageAdapter implements JsonSerializer, JsonDeserializer{
     private static final String CONTENT = "CONTENT";
     @Override
     public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        System.out.println(json);
         JsonObject jsonObject = json.getAsJsonObject();
         String typeString = jsonObject.get(TYPE).getAsString();
         Message.Type type = Message.Type.valueOf(typeString);
@@ -27,7 +26,6 @@ public class MessageAdapter implements JsonSerializer, JsonDeserializer{
 
     @Override
     public JsonElement serialize(Object src, Type typeOfSrc, JsonSerializationContext context) {
-        System.out.println(src);
         JsonObject jsonObject = new JsonObject();
         Message m = (Message) src;
         if(m instanceof Request){

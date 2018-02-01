@@ -43,23 +43,14 @@ public class QueensGame extends ApplicationAdapter{
 //		camera.setToOrtho(false, 30,20);
         camera.setToOrtho(false);
 		camera.update();
-		map = new TmxMapLoader().load("core/assets/maps/test.tmx");
+		map = MapFactory.getMap(Environment.OUTDOORS);
 //		float unitScale = 1 / 32f;
 //		renderer = new OrthogonalTiledMapRenderer(map, unitScale);
 		renderer = new OrthogonalTiledMapRenderer(map);
 		keysPressed = new HashSet<Integer>();
 		keyPressLock = new ReentrantLock();
-//		Thread t = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				Client.start();
-//			}
-//		});
-//		t.start();
 		Client.sendMessageToServer(new NewPlayerRequest());
 		otherPlayers = new ArrayList<Location>();
-
-
 	}
 
 	public void drawPlayerShadow(Location loc, SpriteBatch batch){
@@ -67,7 +58,6 @@ public class QueensGame extends ApplicationAdapter{
 		p.setColor(Color.RED);
 		p.fillRectangle(0, 0, 32, 32);
 		batch.draw(new Texture(p), loc.x, loc.y);
-
 	}
 
 	public Location getLocationRelativeToPlayer(Location loc){
@@ -76,6 +66,10 @@ public class QueensGame extends ApplicationAdapter{
         return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta);
 	}
 
+	public void switchEnvironment(Environment env){
+		setMap(MapFactory.getMap(env));
+		renderer = new OrthogonalTiledMapRenderer(this.map);
+	}
 
 	public Camera getCamera(){
 		return this.camera;
@@ -88,6 +82,8 @@ public class QueensGame extends ApplicationAdapter{
 	public TiledMap getMap(){
 		return this.map;
 	}
+
+	public void setMap(TiledMap map){this.map = map;}
 
 	public void setPlayerInputHandler(PlayerInputProcessor p){
 		Gdx.input.setInputProcessor(p);
@@ -125,7 +121,6 @@ public class QueensGame extends ApplicationAdapter{
 			for (Location l : otherPlayers){
 			    drawPlayerShadow(l, batch);
 			}
-
 			batch.end();
 		}
 	}

@@ -23,6 +23,11 @@ public class ScoutingRequest implements Request{
     }
 
     @Override
+    public int getPlayerId() {
+        return this.playerId;
+    }
+
+    @Override
     public Type getType() {
         return this.type;
     }

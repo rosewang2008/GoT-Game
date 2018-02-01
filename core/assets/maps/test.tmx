@@ -3,6 +3,7 @@
  <tileset firstgid="1" source="Grass.tsx"/>
  <tileset firstgid="49" source="Tree.tsx"/>
  <tileset firstgid="561" source="House.tsx"/>
+ <tileset firstgid="1585" source="Inside Wall.tsx"/>
  <layer name="Tile Layer 2" width="112" height="112">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,

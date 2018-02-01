@@ -23,8 +23,8 @@ public class ScoutingHandler implements Runnable{
 
     @Override
     public void run() {
-        List<Float> xPositions = GameManager.getLocations(true);
-        List<Float> yPositions = GameManager.getLocations(false);
+        List<Float> xPositions = GameManager.getLocations(request.getPlayerId(), true);
+        List<Float> yPositions = GameManager.getLocations(request.getPlayerId(), false);
         this.server.sendMessageToClient(new ScoutingResponse(this.request.getId(), xPositions, yPositions), this.out);
     }
 }

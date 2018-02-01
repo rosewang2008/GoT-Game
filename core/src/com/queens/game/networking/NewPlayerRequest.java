@@ -25,5 +25,10 @@ public class NewPlayerRequest implements Request{
         return this.id;
     }
 
+    @Override
+    public int getPlayerId() {
+        return 0;
+    }
+
 
 }

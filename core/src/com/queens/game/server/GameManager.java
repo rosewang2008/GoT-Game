@@ -38,13 +38,14 @@ public class GameManager {
         return playerId;
     }
 
-    public static List<Float> getLocations(boolean xDirection){
+    public static List<Float> getLocations(int playerId, boolean xDirection){
         List<Float> locations = new ArrayList<Float>();
-        for(Location l : PLAYER_LOCATIONS.values()){
+        for(int id : PLAYER_LOCATIONS.keySet()){
+            if(id == playerId) continue;
             if(xDirection)
-                locations.add(l.x);
+                locations.add(PLAYER_LOCATIONS.get(id).x);
             else
-                locations.add(l.y);
+                locations.add(PLAYER_LOCATIONS.get(id).y);
         }
         return locations;
     }
