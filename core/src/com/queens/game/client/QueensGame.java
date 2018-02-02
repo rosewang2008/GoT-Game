@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.queens.game.networking.Environment;
+import com.queens.game.networking.LocationUpdateRequest;
 import com.queens.game.networking.NewPlayerRequest;
 
 import java.util.*;
@@ -51,7 +52,6 @@ public class QueensGame extends ApplicationAdapter{
 		keyPressLock = new ReentrantLock();
 		Client.sendMessageToServer(new NewPlayerRequest());
 		otherPlayers = new ArrayList<Location>();
-		System.out.println(camera.position);
 	}
 
 	public void drawPlayerShadow(Location loc, SpriteBatch batch){
@@ -78,9 +78,15 @@ public class QueensGame extends ApplicationAdapter{
 	public void switchEnvironment(Environment env, float x, float y){
 		setMap(MapFactory.getMap(env));
 		renderer = new OrthogonalTiledMapRenderer(this.map);
+		// want to find displacement from center
+		System.out.println(x + " " + y);
+//		float cameraX = 320 + (x - 320);
+//		float cameraY = 240 + (y - 224);
 		camera.translate(320-camera.position.x, 240-camera.position.y, 0);
-		player.setWorldX(player.getScreenX());
-		player.setWorldY(player.getScreenY());
+		camera.translate(x - camera.position.x, y-camera.position.y, 0);
+		player.setWorldX(x);
+		player.setWorldY(y);
+		Client.sendMessageToServer(new LocationUpdateRequest(player.getId(), 0, 0, player.getWorldX(), player.getWorldY()));
 	}
 
 	public Camera getCamera(){

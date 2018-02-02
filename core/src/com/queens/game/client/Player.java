@@ -161,9 +161,6 @@ public class Player {
         if(tile == null){
             return false;
         }
-        Iterator keys = tile.getProperties().getKeys();
-        System.out.println("======");
-        while(keys.hasNext()) System.out.println(keys.next());
         return tile.getProperties().containsKey(property);
     }
 
@@ -188,6 +185,12 @@ public class Player {
             case BED:
                 break;
             case TABLE:
+                break;
+            case CHAIR:
+                break;
+            case COUNTER:
+                break;
+            case WALL:
                 break;
             case DOOR:
                 boolean isExit = (Boolean) getProperty(cell, "entrance");

@@ -1,5 +1,6 @@
 package com.queens.game.server;
 
+import com.queens.game.client.Player;
 import com.queens.game.networking.Environment;
 import com.queens.game.networking.EnvironmentSwitchRequest;
 import com.queens.game.networking.EnvironmentSwitchResponse;
@@ -23,8 +24,11 @@ public class EnvironmentSwitchHandler implements Runnable{
 
     @Override
     public void run() {
+        PlayerInfo oldInfo = GameManager.getPlayerInfo(request.getPlayerId());
+        System.out.println("old info " + oldInfo.getX() + " " + oldInfo.getY());
         GameManager.switchEnvironment(request.getPlayerId(), request.getNewEnv());
         PlayerInfo pi = GameManager.getPlayerInfo(request.getPlayerId());
+        System.out.println("new info " + pi.getX() + " " + pi.getY());
         server.sendMessageToClient(new EnvironmentSwitchResponse(request.getId(), request.getNewEnv(), pi.getX(), pi.getY()), out);
     }
 }

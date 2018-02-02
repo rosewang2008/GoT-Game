@@ -8,5 +8,8 @@ public enum ObjectHierarchy{
     PLAYER,
     BED,
     TABLE,
-    DOOR
+    DOOR,
+    CHAIR,
+    COUNTER,
+    WALL
 }

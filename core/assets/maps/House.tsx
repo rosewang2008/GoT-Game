@@ -355,14 +355,14 @@
   <properties>
    <property name="entrance" type="bool" value="true"/>
    <property name="objectType" value="HOUSE"/>
-   <property name="walkable" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="236">
   <properties>
    <property name="entrance" type="bool" value="true"/>
    <property name="objectType" value="HOUSE"/>
-   <property name="walkable" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="237">
