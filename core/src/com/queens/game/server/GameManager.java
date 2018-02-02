@@ -1,12 +1,10 @@
 package com.queens.game.server;
 
+import com.queens.game.client.Player;
 import com.queens.game.networking.Environment;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by aditisri on 1/25/18.
@@ -39,17 +37,8 @@ public class GameManager {
         pi.switchEnvironment(newEnv);
     }
 
-    public static List<Float> getLocations(int playerId, boolean xDirection){
-        List<Float> locations = new ArrayList<Float>();
-        for(int id : PLAYER_LOCATIONS.keySet()){
-            if(id == playerId) continue;
-            if(xDirection)
-                locations.add(PLAYER_LOCATIONS.get(id).getX());
-            else
-                locations.add(PLAYER_LOCATIONS.get(id).getY());
-        }
-        return locations;
-    }
+
+    public static Set<PlayerInfo> getAllPlayerInfo(){return new HashSet<PlayerInfo>(PLAYER_LOCATIONS.values());}
 
     public static PlayerInfo getPlayerInfo(int playerId){
         return PLAYER_LOCATIONS.get(playerId);

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.queens.game.networking.CollisionVerificationRequest;
 import com.queens.game.networking.Environment;
 import com.queens.game.networking.LocationUpdateRequest;
 import com.queens.game.networking.NewPlayerRequest;
@@ -30,9 +31,11 @@ public class QueensGame extends ApplicationAdapter{
 	public class Location{
 		public float x;
 		public float y;
-		public Location(float x, float y){
+		public Environment env;
+		public Location(float x, float y, Environment env){
 			this.x = x;
 			this.y = y;
+			this.env = env;
 		}
 	}
 
@@ -48,11 +51,12 @@ public class QueensGame extends ApplicationAdapter{
 //		float unitScale = 1 / 32f;
 //		renderer = new OrthogonalTiledMapRenderer(map, unitScale);
 		renderer = new OrthogonalTiledMapRenderer(map);
-		keysPressed = new HashSet<Integer>();
+		keysPressed = new HashSet<>();
 		keyPressLock = new ReentrantLock();
 		Client.sendMessageToServer(new NewPlayerRequest());
-		otherPlayers = new ArrayList<Location>();
+		otherPlayers = new ArrayList<>();
 	}
+
 
 	public void drawPlayerShadow(Location loc, SpriteBatch batch){
 		Pixmap p = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
@@ -72,7 +76,18 @@ public class QueensGame extends ApplicationAdapter{
 	public Location getLocationRelativeToPlayer(Location loc){
 	    float xDelta = loc.x - this.player.getWorldX();
 	    float yDelta = loc.y - this.player.getWorldY();
-        return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta);
+        return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta, loc.env);
+	}
+
+	public void checkforPlayerCollisions(){
+	    otherPlayers
+				.stream()
+				.filter(loc -> loc.x == player.getWorldX() && loc.y == player.getWorldY())
+				.map(loc -> {
+					Client.sendMessageToServer(new CollisionVerificationRequest(this.player.getId()));
+					return null;
+				});
+
 	}
 
 	public void switchEnvironment(Environment env, float x, float y){
@@ -117,10 +132,10 @@ public class QueensGame extends ApplicationAdapter{
 		this.isGoing= true;
 	}
 
-	public void setOtherPlayers(List<Float> xLocations, List<Float> yLocations){
+	public void setOtherPlayers(List<Float> xLocations, List<Float> yLocations, List<Environment> envs){
 	    List<Location> locations = new ArrayList<Location>();
 	    for(int i = 0; i < xLocations.size(); i++){
-	    	locations.add(getLocationRelativeToPlayer(new Location(xLocations.get(i), yLocations.get(i))));
+	    	locations.add(getLocationRelativeToPlayer(new Location(xLocations.get(i), yLocations.get(i), envs.get(i))));
 		}
 		this.otherPlayers = locations;
 	}

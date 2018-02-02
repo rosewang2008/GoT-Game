@@ -41,9 +41,11 @@ public class PlayerInfo {
         return this.location.y;
     }
 
+    public Environment getEnvironment(){return this.location.env;}
+
+
     public void switchEnvironment(Environment newEnv){
         if(this.location.parent != null && newEnv == this.location.parent.env) {
-            System.out.println("found parent");
             this.location = this.location.parent;
         }
         else {
