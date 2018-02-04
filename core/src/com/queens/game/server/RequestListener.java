@@ -19,20 +19,16 @@ public class RequestListener implements Runnable{
     private InputStreamReader in;
     private OutputStreamWriter out;
     private GsonBuilder builder;
-    private Socket socket;
     private Server server;
+    private Socket socket;
 
-    public RequestListener(Server server, Socket s){
-        try {
-            this.server = server;
-            this.in = new InputStreamReader(s.getInputStream());
-            this.out = new OutputStreamWriter(s.getOutputStream());
-            this.builder = new GsonBuilder();
-            builder.registerTypeAdapter(Message.class, new MessageAdapter());
-            this.socket = s;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public RequestListener(Server server, Socket s, InputStreamReader in, OutputStreamWriter out){
+        this.server = server;
+        this.socket = s;
+        this.in = in;
+        this.out = out;
+        this.builder = new GsonBuilder();
+        builder.registerTypeAdapter(Message.class, new MessageAdapter());
 
     }
 
@@ -54,6 +50,10 @@ public class RequestListener implements Runnable{
                     break;
                 case ENVIRONMENT_SWITCH:
                     t = new Thread(new EnvironmentSwitchHandler((EnvironmentSwitchRequest) req, this.server, this.out));
+                    break;
+                case COLLISION_VERIFICATION:
+                    t = new Thread(new CollisionVerificationHandler((CollisionVerificationRequest) req, this.server, this.out));
+                    break;
 
             }
             if(t != null) {

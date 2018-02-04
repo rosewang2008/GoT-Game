@@ -137,6 +137,7 @@ public class Player {
                 break;
             }
         }
+        game.handlePlayerCollisions();
         Client.sendMessageToServer(updateRequest);
     }
 

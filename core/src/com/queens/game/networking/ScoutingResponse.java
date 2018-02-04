@@ -11,11 +11,13 @@ public class ScoutingResponse implements Response{
     private List<Float> xLocations;
     private List<Float> yLocations;
     private List<Environment> environments;
-    public ScoutingResponse(int requestId, List<Float> xLocations, List<Float> yLocations, List<Environment> envs){
+    private List<Integer> ids;
+    public ScoutingResponse(int requestId, List<Integer> ids, List<Float> xLocations, List<Float> yLocations, List<Environment> envs){
         this.requestId = requestId;
         this.xLocations = xLocations;
         this.yLocations = yLocations;
         this.environments = envs;
+        this.ids = ids;
     }
 
     @Override
@@ -32,6 +34,10 @@ public class ScoutingResponse implements Response{
     }
 
     public List<Environment> getEnvironments(){ return this.environments;}
+
+    public List<Integer> getIds() {
+        return ids;
+    }
 
     @Override
     public Type getType() {

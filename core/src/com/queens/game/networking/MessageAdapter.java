@@ -73,6 +73,14 @@ public class MessageAdapter implements JsonSerializer, JsonDeserializer{
                         return EnvironmentSwitchResponse.class;
                 }
                 break;
+            case COLLISION_VERIFICATION:
+                switch (childType){
+                    case REQUEST:
+                        return CollisionVerificationRequest.class;
+                    case RESPONSE:
+                        return CollisionVerificationResponse.class;
+                }
+                break;
         }
         return null;
     }

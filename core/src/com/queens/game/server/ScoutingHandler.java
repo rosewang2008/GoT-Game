@@ -41,9 +41,13 @@ public class ScoutingHandler implements Runnable{
         return allPlayerInfo.stream().map(PlayerInfo::getEnvironment).collect(Collectors.toList());
     }
 
+    public List<Integer> getIds(Set<PlayerInfo> allPlayerInfo){
+        return allPlayerInfo.stream().map(PlayerInfo::getPlayerId).collect(Collectors.toList());
+    }
+
     @Override
     public void run() {
         Set<PlayerInfo> allPlayerInfo = filterOutIrrelevant(GameManager.getAllPlayerInfo());
-        this.server.sendMessageToClient(new ScoutingResponse(this.request.getId(), getxPositions(allPlayerInfo), getyPositions(allPlayerInfo), getEnvironments(allPlayerInfo)), this.out);
+        this.server.sendMessageToClient(new ScoutingResponse(this.request.getId(), getIds(allPlayerInfo), getxPositions(allPlayerInfo), getyPositions(allPlayerInfo), getEnvironments(allPlayerInfo)), this.out);
     }
 }

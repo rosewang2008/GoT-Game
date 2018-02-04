@@ -26,7 +26,7 @@ public class QueensGame extends ApplicationAdapter{
 	static float stepDistance = 32;
 	Player player;
 	boolean isGoing;
-	List<Location> otherPlayers;
+	Map<Integer, Location> otherPlayerLocations;
 
 	public class Location{
 		public float x;
@@ -54,15 +54,16 @@ public class QueensGame extends ApplicationAdapter{
 		keysPressed = new HashSet<>();
 		keyPressLock = new ReentrantLock();
 		Client.sendMessageToServer(new NewPlayerRequest());
-		otherPlayers = new ArrayList<>();
+		otherPlayerLocations = new HashMap<>();
 	}
 
 
 	public void drawPlayerShadow(Location loc, SpriteBatch batch){
+		Location relativeLocation = getLocationRelativeToPlayer(loc);
 		Pixmap p = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
 		p.setColor(Color.RED);
 		p.fillRectangle(0, 0, 32, 32);
-		batch.draw(new Texture(p), loc.x, loc.y);
+		batch.draw(new Texture(p), relativeLocation.x, relativeLocation.y);
 	}
 
 	public void waitForServer(){
@@ -79,15 +80,14 @@ public class QueensGame extends ApplicationAdapter{
         return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta, loc.env);
 	}
 
-	public void checkforPlayerCollisions(){
-	    otherPlayers
-				.stream()
-				.filter(loc -> loc.x == player.getWorldX() && loc.y == player.getWorldY())
-				.map(loc -> {
-					Client.sendMessageToServer(new CollisionVerificationRequest(this.player.getId()));
-					return null;
-				});
-
+	public void handlePlayerCollisions(){
+		for(int id : otherPlayerLocations.keySet()){
+			Location loc = otherPlayerLocations.get(id);
+			if(loc.x == player.getWorldX() && loc.y == player.getWorldY()){
+				Client.sendMessageToServer(new CollisionVerificationRequest(this.player.getId(), id, player.getWorldX(), player.getWorldY()));
+				this.waitForServer();
+			}
+		}
 	}
 
 	public void switchEnvironment(Environment env, float x, float y){
@@ -132,12 +132,12 @@ public class QueensGame extends ApplicationAdapter{
 		this.isGoing= true;
 	}
 
-	public void setOtherPlayers(List<Float> xLocations, List<Float> yLocations, List<Environment> envs){
-	    List<Location> locations = new ArrayList<Location>();
+	public void setOtherPlayers(List<Integer> ids, List<Float> xLocations, List<Float> yLocations, List<Environment> envs){
+	    Map<Integer, Location> locations = new HashMap<>();
 	    for(int i = 0; i < xLocations.size(); i++){
-	    	locations.add(getLocationRelativeToPlayer(new Location(xLocations.get(i), yLocations.get(i), envs.get(i))));
+	    	locations.put(ids.get(i), new Location(xLocations.get(i), yLocations.get(i), envs.get(i)));
 		}
-		this.otherPlayers = locations;
+		this.otherPlayerLocations = locations;
 	}
 
 
@@ -151,7 +151,7 @@ public class QueensGame extends ApplicationAdapter{
 			renderer.render();
 			batch.begin();
 			player.draw(batch);
-			for (Location l : otherPlayers){
+			for (Location l : otherPlayerLocations.values()){
 			    drawPlayerShadow(l, batch);
 			}
 			batch.end();

@@ -25,6 +25,7 @@ public class NewPlayerHandler implements Runnable{
     @Override
     public void run() {
         int newPlayerId = GameManager.registerNewPlayer();
+        GameManager.setClientOutputStream(newPlayerId, out);
         server.sendMessageToClient(new NewPlayerResponse(request.getId(), newPlayerId), this.out);
     }
 }

@@ -23,7 +23,7 @@ public class ScoutingHandler implements Runnable{
     }
 
     public void handle(){
-        game.setOtherPlayers(res.getxLocations(), res.getyLocations(), res.getEnvironments());
+        game.setOtherPlayers(res.getIds(), res.getxLocations(), res.getyLocations(), res.getEnvironments());
     }
 
 }

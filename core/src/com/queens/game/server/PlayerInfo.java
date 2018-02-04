@@ -28,6 +28,10 @@ public class PlayerInfo {
         this.location = new Location(x, y, env, null);
     }
 
+    public int getPlayerId() {
+        return playerId;
+    }
+
     public void setLocation(float x, float y){
         this.location.x = x;
         this.location.y = y;
