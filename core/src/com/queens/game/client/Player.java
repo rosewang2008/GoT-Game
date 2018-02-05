@@ -126,18 +126,16 @@ public class Player {
         for(int i = layers.size()-1; i >=0; i--){
             TiledMapTileLayer layer = (TiledMapTileLayer) layers.get(i);
             if (this.hasCollision(layer)) {
-                System.out.println("got to collision");
                 TiledMapTileLayer.Cell cell = getCell(layer);
                 undoMove(deltaX, deltaY);
                 if (cellHasProperty(cell, "objectType")) {
                     String objectType = (String) getProperty(cell, "objectType");
-                    System.out.println(objectType);
                     respondToCollision(cell, objectType);
                 }
                 break;
             }
         }
-        game.handlePlayerCollisions();
+        if(game.handlePlayerCollisions()) undoMove(deltaX, deltaY);
         Client.sendMessageToServer(updateRequest);
     }
 

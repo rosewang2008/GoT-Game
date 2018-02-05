@@ -15,10 +15,15 @@ public class CollisionVerificationHandler implements Runnable{
 
     @Override
     public void run() {
+        handle();
 
     }
 
     public void handle(){
+        if(response.getIsCollision()){
+            System.out.println("is collision");
+        }
+        game.resumePlay();
 
     }
 }

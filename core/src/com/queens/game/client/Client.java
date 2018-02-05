@@ -69,6 +69,10 @@ public class Client{
                     break;
                 case ENVIRONMENT_SWITCH:
                     t = new Thread(new EnvironmentSwitchHandler((EnvironmentSwitchResponse) res, game));
+                    break;
+                case COLLISION_VERIFICATION:
+                    t = new Thread(new CollisionVerificationHandler((CollisionVerificationResponse) res, game));
+                    break;
             }
             if(t != null){
                 t.start();

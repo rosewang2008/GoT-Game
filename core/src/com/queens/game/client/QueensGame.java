@@ -80,14 +80,16 @@ public class QueensGame extends ApplicationAdapter{
         return new Location(this.player.getScreenX() + xDelta, this.player.getScreenY() + yDelta, loc.env);
 	}
 
-	public void handlePlayerCollisions(){
+	public boolean handlePlayerCollisions(){
+	    boolean hasCollision = false;
 		for(int id : otherPlayerLocations.keySet()){
 			Location loc = otherPlayerLocations.get(id);
 			if(loc.x == player.getWorldX() && loc.y == player.getWorldY()){
+				hasCollision = true;
 				Client.sendMessageToServer(new CollisionVerificationRequest(this.player.getId(), id, player.getWorldX(), player.getWorldY()));
-				this.waitForServer();
 			}
 		}
+		return hasCollision;
 	}
 
 	public void switchEnvironment(Environment env, float x, float y){
